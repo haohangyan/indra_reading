@@ -150,6 +150,13 @@ class SparserReader(Reader):
             logger.error(f"Error reading file {fpath}: {e}")
             return (None, None)
 
+    def _safe_read_some(self, batch,  outbuf=None, verbose=False):
+        try:
+            return self.read_some(batch, outbuf, verbose)
+        except Exception as e:
+            logger.error(f"Error reading batch: {e}")
+            return ([], None)
+
     def _read(self, content_iter, verbose=False, log=False, n_per_proc=None):
         "Perform the actual reading."
         ret = []
@@ -180,10 +187,10 @@ class SparserReader(Reader):
                     if n_per_proc != 1:
                         batches = [self.file_list[n*n_per_proc:(n+1)*n_per_proc]
                                    for n in range(L//n_per_proc + 1)]
-                        out_lists_and_buffs = pool.map(self.read_some,
+                        out_lists_and_buffs = pool.map(self._safe_read_some,
                                                        batches)
                     else:
-                        out_files_and_buffs = pool.map(self.read_one,
+                        out_files_and_buffs = pool.map(self._safe_read_one,
                                                        self.file_list)
                         out_lists_and_buffs = [([out_files], buffs)
                                                for out_files, buffs
