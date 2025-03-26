@@ -143,6 +143,13 @@ class SparserReader(Reader):
                 outpath_list.append(output)
         return outpath_list, outbuf
 
+    def _safe_read_one(self, fpath,  outbuf, verbose):
+        try:
+            return self.read_one(fpath, outbuf, verbose)
+        except Exception as e:
+            logger.error(f"Error reading file {fpath}: {e}")
+            return (None, None)
+
     def _read(self, content_iter, verbose=False, log=False, n_per_proc=None):
         "Perform the actual reading."
         ret = []
@@ -161,7 +168,7 @@ class SparserReader(Reader):
         try:
             if self.n_proc == 1:
                 for fpath in self.file_list:
-                    outpath, _ = self.read_one(fpath, outbuf, verbose)
+                    outpath, _ = self._safe_read_one(fpath, outbuf, verbose)
                     if outpath is not None:
                         output_file_list.append(outpath)
             else:
