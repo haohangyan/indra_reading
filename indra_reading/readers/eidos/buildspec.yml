@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR and getting Eidos JAR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      - aws s3 cp s3://bigmech/travis/eidos-assembly-0.2.3-SNAPSHOT.jar .
+      - aws s3 cp s3://bigmech/travis/eidos-assembly-0.2.3-SNAPSHOT.jar indra_reading/readers/eidos/
   build:
     commands:
       - echo Build started on `date`
